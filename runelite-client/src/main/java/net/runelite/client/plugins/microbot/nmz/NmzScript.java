@@ -42,8 +42,8 @@ public class NmzScript extends Script {
 
     public static PrayerPotionScript prayerPotionScript;
 
-    public static int maxHealth = Rs2Random.between(2, 8);
-    public static int minAbsorption = Rs2Random.between(100, 300);
+    public static int maxHealth = Rs2Random.between(2, 5);
+    public static int minAbsorption = Rs2Random.between(200, 600);
 
     private WorldPoint center = new WorldPoint(Rs2Random.between(2270, 2276), Rs2Random.between(4693, 4696), 0);
 
@@ -237,9 +237,13 @@ public class NmzScript extends Script {
         int realRangedLevel = Microbot.getClient().getRealSkillLevel(Skill.RANGED);
         boolean hasOverloadPotions = config.overloadPotionAmount() > 0;
 
+        // Skip self-harm if HP is 51 or 52 and we have an overload potion in inventory
+        boolean shouldSkipSelfHarm = (currentHP == 51 || currentHP == 52) && Rs2Inventory.hasItem("overload");
+
         if (currentHP >= maxHealth
                 && !useOverload
-                && (!hasOverloadPotions || currentRangedLevel != realRangedLevel)) {
+                && (!hasOverloadPotions || currentRangedLevel != realRangedLevel)
+                && !shouldSkipSelfHarm) {
             maxHealth = 1;
 
             if (Rs2Inventory.hasItem(ItemID.LOCATOR_ORB)) {
